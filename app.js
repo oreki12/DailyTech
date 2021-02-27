@@ -4,10 +4,13 @@ const path = require('path');
 const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
-const mongoose = require('mongoose');
+const session = require('express-session');
+const flash = require('connect-flash');
+
 const blogsRouter = require('./routes/blogs');
 const reviewsRouter = require('./routes/reviews');
 
+const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost:27017/DailyTech', {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false}).then(() => {
     console.log("MONGO CONNECTION OPEN!!");
@@ -25,6 +28,27 @@ app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')));
+
+const sessionConfig = {
+    secret: 'Changethissecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie:{
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+
+app.use(session(sessionConfig))
+app.use(flash())
+
+// before any route
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 app.use('/blogs', blogsRouter);
 app.use('/blogs/:id/reviews', reviewsRouter);

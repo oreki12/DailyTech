@@ -34,6 +34,7 @@ router.post('/', validateBlogs, catchAsync(async(req, res, next) => {
     // console.log(req.body);
     const blog = new Blogs(req.body.blogs)
     await blog.save();
+    req.flash('success', 'Successfully made a new blog!');
     res.redirect(`/blogs/${blog._id}`)
 }))
 
@@ -42,7 +43,10 @@ router.post('/', validateBlogs, catchAsync(async(req, res, next) => {
 router.get('/:id', catchAsync(async(req, res, next) => {
     const { id } = req.params;
     const blog = await Blogs.findById(id).populate('reviews');
-    // console.log(blog);
+    if (!blog) {
+        req.flash('error', 'Cannot find that blog!');
+        return res.redirect('/blogs');
+    }
     res.render('Blogs/show', { blog })
 }))
 
@@ -50,6 +54,10 @@ router.get('/:id', catchAsync(async(req, res, next) => {
 router.get('/:id/edit', catchAsync(async(req, res) => {
     const { id } = req.params;
     const blog = await Blogs.findById(id);
+    if (!blog) {
+        req.flash('error', 'Cannot find that blog!');
+        return res.redirect('/blogs');
+    }
     res.render('Blogs/edit', {blog});
 }))
 
@@ -58,6 +66,7 @@ router.put('/:id', validateBlogs, catchAsync(async(req, res, next) => {
     // res.send('worked')
     const { id } = req.params;
     const blog = await Blogs.findByIdAndUpdate(id,{ ...req.body.blogs });
+    req.flash('success', 'Successfully edited your blog!');
     res.redirect(`/blogs/${blog._id}`)
 }))
 
@@ -65,6 +74,7 @@ router.put('/:id', validateBlogs, catchAsync(async(req, res, next) => {
 router.delete('/:id', catchAsync(async(req, res, next) => {
     const { id } = req.params;
     const blog = await Blogs.findByIdAndRemove(id)  
+    req.flash('success', 'Successfully deleted your blog!');
     res.redirect("/blogs")
 }))
 
