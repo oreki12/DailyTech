@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Review = require('./review')
+// const Review = require('./review')
 const Schema = mongoose.Schema;
 
 
@@ -28,15 +28,15 @@ const BlogSchema = new Schema({
     ]
 })
 
-BlogSchema.post('findOneAndDelete', async function (doc) {	
-    if (doc) {	
-        await Review.deleteMany({	
-            _id: {	
-                $in: doc.reviews	
-            }	
-        })	
-    }	
-})
+// BlogSchema.post('findOneAndDelete', async function (doc) {	
+//     if (doc) {	
+//         await Review.deleteMany({	
+//             _id: {	
+//                 $in: doc.reviews	
+//             }	
+//         })	
+//     }	
+// })
 
 const Blogs = mongoose.model('Blogs', BlogSchema);
 

@@ -8,7 +8,7 @@ const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const mongoose = require('mongoose');
 const Blogs = require('./models/Blogs');
-const Review = require('./models/Blogs');
+const Review = require('./models/review');
 
 
 mongoose.connect('mongodb://localhost:27017/DailyTech', {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false}).then(() => {
@@ -108,18 +108,14 @@ app.delete('/blogs/:id', catchAsync(async(req, res, next) => {
 }))
 
 // Reviews
-app.post('/blogs/:id/reviews', catchAsync(async(req, res,) => {
-    // res.send('you made it')
+app.post('/blogs/:id/reviews', validateReview, catchAsync(async(req, res) => {
+    // res.send("working")
     const blog = await Blogs.findById(req.params.id);
-    console.log(blog);
-    console.log('=====');
     const review = new Review(req.body.review);
-    console.log(review);
     blog.reviews.push(review);
     await review.save();
-    await blog.save();
-    // req.flash('success', 'Created new review!');
-    res.redirect(`/blogs/${blog._id}`);
+    await blog.save()
+    res.redirect(`/blogs/${blog._id}`)
 }))
 
 app.delete('/blogs/:id/reviews/:reviewId', catchAsync(async (req, res) => {
