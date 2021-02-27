@@ -1,0 +1,53 @@
+<% layout('layouts/boilerplate') %>
+<div class="row">
+    <h1 class="text-center">Create New Blog</h1>
+    <div class="col-6 offset-3">
+        <form action="/blogs" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+               <label class="form-label" for="title">Title of your blog:</label>
+                <input class="form-control" type="text" id="title" name="blogs[title]" required >  
+                <div class="valid-feedback">
+                    Looks good!
+                </div> 
+                <div class="invalid-feedback">
+                    Please provide a title!
+                </div>
+            </div>
+
+             <div class="mb-3">
+                <label class="form-label" for="image">Add Image Url:</label>
+                <input class="form-control" type="text" id="image" name="blogs[image]" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div> 
+             </div>
+
+             <div class="mb-3">
+                <label class="form-label" for="author">Author's name:</label>
+                <input class="form-control" type="text" id="author" name="blogs[author]" required> 
+                <div class="valid-feedback">
+                    Looks good!
+                </div> 
+                <div class="invalid-feedback">
+                    Plese enter your name
+                </div>
+             </div> 
+
+            <div class="mb-3">
+                <label for="content" class="form-label">Content:</label>
+                <textarea class="form-control" id="content" rows="7" name="blogs[content]" required></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div> 
+                <div class="invalid-feedback">
+                    add your content here!
+                </div>
+            </div>
+             <div class="mb-3">
+                <button class="btn btn-outline-success" type="submit">Submit</button> 
+             </div>
+            
+        </form> 
+        <a href="/blogs">all blogs</a>
+    </div>
+</div>

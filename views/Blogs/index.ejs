@@ -1,0 +1,16 @@
+<% layout('layouts/boilerplate') %>
+    
+<% for(blog of blogs){ %>
+<div class="row">
+    <div class="col-10">
+          <div class="card mb-3" style="max-width: 45rem;">
+            <img src="<%= blog.image%>" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title"><a href="blogs/<%= blog._id%>"><%= blog.title%></a></h5>
+              <p class="card-text"><%= blog.content%></p>
+              <p class="card-text"><small class="text-muted">By <%= blog.author%></small></p>
+            </div>
+          </div>
+        </div>
+    </div>
+<% } %>  
