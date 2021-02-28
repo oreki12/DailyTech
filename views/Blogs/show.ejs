@@ -7,15 +7,17 @@
                 <h5 class="card-title"><%= blog.title %></h5>
                 <p><%= blog.content %></p>
                 <p class="card-text">
-                    <small class="text-muted">Added by <%= blog.author %></small>
+                    <small class="text-muted">Added by <%= blog.author.username %></small>
                 </p>
             </div>  
             <div class="card-body">
                 <a class="btn btn-outline-success" href="/blogs">Back</a>
+                <%  if( currentUser && blog.author.equals(currentUser._id))  {%>
                 <a class="card-link btn btn-outline-info" href="/blogs/<%= blog._id %>/edit">Edit</a>
                 <form class="d-inline" action="/blogs/<%= blog._id %>?_method=DELETE" method="post">
                     <button class="btn btn-outline-danger" type="submit">Delete</button>
                 </form>
+                <% } %> 
             </div>         
         </div>
 
@@ -37,10 +39,13 @@
             <div class="card mb-3 ">
                 <div class="card-body mb-2">
                     <h5 class="card-title">Rating: <%= review.rating %></h5>
+                    <small class="text-muted">Added by <%= review.author.username %></small>
                     <p class="card-text">Review: <%= review.body %></p>
+                    <%  if( currentUser && review.author.equals(currentUser._id))  {%>
                     <form action="/blogs/<%=blog._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
                         <button class="btn btn-sm btn-danger">Delete</button>
                     </form>
+                    <% } %> 
                 </div>
             </div>
             <% } %>

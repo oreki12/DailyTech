@@ -29,7 +29,9 @@ router.post('/',isLoggedIn, validateReview, catchAsync(async(req, res) => {
     // res.send("working")
     const blog = await Blogs.findById(req.params.id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     blog.reviews.push(review);
+    review.author = req.user._id;
     await review.save();
     await blog.save()
     req.flash('success', 'Succesfully created review');

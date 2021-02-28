@@ -8,7 +8,7 @@
             <div class="card-body">
               <h5 class="card-title"><a href="blogs/<%= blog._id%>"><%= blog.title%></a></h5>
               <p class="card-text"><%= blog.content%></p>
-              <p class="card-text"><small class="text-muted">By <%= blog.author%></small></p>
+              <p class="card-text"><small class="text-muted">By <%= blog.author.username%></small></p>
             </div>
           </div>
         </div>

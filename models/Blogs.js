@@ -12,18 +12,18 @@ const BlogSchema = new Schema({
         type:String,
         required: true
     },
-    author:{
-        type:String,
-        required: true
-    },
+    // author:{
+    //     type:String,
+    //     required: true
+    // },
     content:{
         type: String,
         required: true
     },
-    // author: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'User'
-    // },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     reviews:[
         {
             type: Schema.Types.ObjectId,

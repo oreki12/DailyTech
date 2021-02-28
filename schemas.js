@@ -4,7 +4,6 @@ module.exports.blogSchema = Joi.object({
     blogs: Joi.object({
         title: Joi.string().required(),
         image: Joi.string().required(),
-        author: Joi.string().required(),
         content: Joi.string().required()
     }).required()
 });
