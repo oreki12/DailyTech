@@ -2,48 +2,14 @@ const express = require('express');
 //===============mergeParams: true if not it will show "reiews" is null.
 const router = express.Router({ mergeParams: true });
 //===============
-const { reviewSchema } = require('../schemas')
 const catchAsync = require('../utils/catchAsync');
-const ExpressError = require('../utils/ExpressError');
-const Blogs = require('../models/Blogs');
-const Review = require('../models/review');
-const { isLoggedIn } = require('../middleware')
-
-
-
-
-// reviews validation
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+const reviews = require('../controllers/reviews')
+const { isLoggedIn, validateReview } = require('../middleware')
 
 
 // Reviews
-router.post('/',isLoggedIn, validateReview, catchAsync(async(req, res) => {
-    // res.send("working")
-    const blog = await Blogs.findById(req.params.id);
-    const review = new Review(req.body.review);
-    review.author = req.user._id;
-    blog.reviews.push(review);
-    review.author = req.user._id;
-    await review.save();
-    await blog.save()
-    req.flash('success', 'Succesfully created review');
-    res.redirect(`/blogs/${blog._id}`)
-}))
+router.post('/',isLoggedIn, validateReview, catchAsync(reviews.createReview))
 
-router.delete('/:reviewId',isLoggedIn, catchAsync(async (req, res) => {
-    const { id, reviewId } = req.params;
-    await Blogs.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-    await Review.findByIdAndDelete(reviewId);
-    req.flash('error', 'Successfully deleted review')
-    res.redirect(`/blogs/${id}`);
-}))
+router.delete('/:reviewId',isLoggedIn, catchAsync(reviews.deleteReview))
 
 module.exports = router

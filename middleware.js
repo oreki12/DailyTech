@@ -1,5 +1,7 @@
 const Blogs = require('./models/Blogs');
 const Review = require('./models/review');
+const ExpressError = require('./utils/ExpressError');
+const { blogSchema, reviewSchema } = require('./schemas');
 
 
 
@@ -30,4 +32,26 @@ module.exports.isReviewAuthor = async (req, res, next) => {
         return res.redirect(`/blogs/${id}`);
     }
     next();
+}
+
+// blog validation
+module.exports.validateBlogs = ( req, res, next) =>{
+    const {error} = blogSchema.validate(req.body);
+    if(error){
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    }else{
+        next();
+    }
+}
+
+// reviews validation
+module.exports.validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
 }

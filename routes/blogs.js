@@ -1,93 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const Blogs = require('../models/Blogs');
-const { blogSchema } = require('../schemas')
+const blogs = require('../controllers/blogs')
 const catchAsync = require('../utils/catchAsync');
-const ExpressError = require('../utils/ExpressError');
-const { isLoggedIn, isAuthor } = require('../middleware')
-
-
-
-// blog validation
-const validateBlogs = ( req, res, next) =>{
-    const {error} = blogSchema.validate(req.body);
-    if(error){
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    }else{
-        next();
-    }
-}
-
+const { isLoggedIn, isAuthor, validateBlogs } = require('../middleware')
 
 // Index
-router.get('/', async(req, res) => {
-    const blogs = await Blogs.find({}).populate('author')
-    res.render('Blogs/index', {blogs})
-})
+router.route('/')
+    .get( catchAsync(blogs.index))
+    .post(isLoggedIn, validateBlogs, catchAsync(blogs.createdNewBlog))
 
-router.get('/new', isLoggedIn, (req, res) => {
-    res.render('Blogs/new');
-})
-
-// create new blog
-router.post('/',isLoggedIn, validateBlogs, catchAsync(async(req, res, next) => {
-    // console.log(req.body);
-    const blog = new Blogs(req.body.blogs)
-    blog.author = req.user._id;
-    await blog.save();
-    req.flash('success', 'Successfully made a new blog!');
-    res.redirect(`/blogs/${blog._id}`)
-}))
+router.get('/new', isLoggedIn, blogs.renderingNewForm)
 
 
 // show selected blog
-router.get('/:id', catchAsync(async(req, res, next) => {
-    const { id } = req.params;
-    const blog = await (await Blogs.findById(id).populate({
-        path: 'reviews',
-        populate: {
-            path: 'author'
-        }
-    }).populate('author'));
-    // console.log(blog);
-    if (!blog) {
-        req.flash('error', 'Cannot find that blog!');
-        return res.redirect('/blogs');
-    }
-    res.render('Blogs/show', { blog })
-}))
+router.route('/:id')
+    .get(catchAsync(blogs.showBlog))
+    .put(isLoggedIn, isAuthor, validateBlogs, catchAsync(blogs.editBlog))
+    .delete(isLoggedIn, isAuthor, catchAsync(blogs.deleteBlog))
 
 // render edit form
-router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async(req, res) => {
-    const { id } = req.params;
-    const blog = await Blogs.findById(id);
-    if (!blog) {
-        req.flash('error', 'Cannot find that blog!');
-        return res.redirect('/blogs');
-    }
-    res.render('Blogs/edit', {blog});
-}))
-
-// update blog
-router.put('/:id',isLoggedIn, isAuthor, validateBlogs, catchAsync(async(req, res, next) => {
-    // res.send('worked')
-    const { id } = req.params;
-    const blog = await Blogs.findByIdAndUpdate(id,{ ...req.body.blogs });
-    req.flash('success', 'Successfully edited your blog!');
-    res.redirect(`/blogs/${blog._id}`)
-}))
-
-// delete Blog
-router.delete('/:id',isLoggedIn, isAuthor, catchAsync(async(req, res, next) => {
-    const { id } = req.params;
-    const blog = await Blogs.findByIdAndRemove(id)  
-    req.flash('success', 'Successfully deleted your blog!');
-    res.redirect("/blogs")
-}))
-
-
-
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(blogs.renderEditForms))
 
 
 module.exports = router;
